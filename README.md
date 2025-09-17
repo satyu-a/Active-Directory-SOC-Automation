@@ -1,17 +1,17 @@
-# Active-Directory
+# Active-Directory SOC Automation
 
 ## Objective
 
 This lab aims to design and automate a Security Operations Center (SOC) lab that integrates Active Directory as the core identity infrastructure, simulating realistic enterprise environments. The project focuses on detecting, analyzing, and responding to adversary attack chains by automating log collection, correlation, and response workflows. This includes mapping simulated threats to MITRE ATT&CK techniques within Active Directory, automating detection pipelines, and orchestrating incident response to improve speed, accuracy, and resilience of security operations.
 
-## Skills Learned
+### Skills Learned
 
-## Tools Used
+### Tools Used
 
-## Procedure
+### Procedure
 1. Login to the Virtual Machine via RDP/SSH
-2. Ubuntu server installation on Vultr
-3. Wazuh installation
+2. VPC Configuration
+3. Active Directory Setup
 4. TheHive installation
 5. Tools Configuration
 6. Malware Analysis (Mimikatz)
@@ -20,8 +20,13 @@ This lab aims to design and automate a Security Operations Center (SOC) lab that
 ## Logical Diagram of the Setup
 
 > [!NOTE]
-> At the time of drafting this readme, Windows standard 2022 OS is not available in India location, so Atlanta, USA server is used.
-> Server Setup is not included in this repo but the configuartions are. Refer to [SERVER SETUP](https://github.com/satyu-a/SOC-automation?tab=readme-ov-file#step-2-ubuntu-server-installation-on-vultr) for guide. Everything except the OS       selection is same. OS is **Windows standard 2022x64**.
+> - At the time of drafting this readme, Windows standard 2022 OS is not available in India location, so Atlanta, USA server is used.
+> - Server Setup is not included in this repo but the configuartions are.
+> - Refer to [SERVER SETUP](https://github.com/satyu-a/SOC-automation?tab=readme-ov-file#step-2-ubuntu-server-installation-on-vultr) for guide. Everything except the OS selection is same.
+> - OS is **Windows standard 2022x64**.
+> - After Clicking on a deployed server, the server credentials can be accessed from the overview page. These will be used for RDP and SSH logins
+> <img width="863" height="945" alt="image" src="https://github.com/user-attachments/assets/fdf25679-94e0-418f-9c6a-2ef57bee739d" />
+> - If you have a dynamic public IP for your home network, you might have to keep updating the VULTR firewall rules as the IP keeps changing.
 
 ## Machine Configurations:
 1. Cloud Hosting: VULTR
@@ -39,4 +44,268 @@ This lab aims to design and automate a Security Operations Center (SOC) lab that
     - Hostname: DEFYER-ADSP-01
     - Specs: Atlnta USA location, Shared CPU, 4vCPU, 8GB RAM, 160GB SSD, Ubuntu 22.04
     - VULTR firewall rule 1: Protocol - SSH, Port - 22, Action - Accept, Source - Custom, [Your_IP_Address] 
-    - VULTR firewall rule 2: Protocol - MS RDP, Port - 3389, Action - Accept, Source - Custom, [Your_IP_Address] 
+    - VULTR firewall rule 2: Protocol - MS RDP, Port - 3389, Action - Accept, Source - Custom, [Your_IP_Address]
+4. VPC configuration so that all VM can communicate with each other:
+    - To put all the VM in the same private network, go the VM > Settings > VPC Networks > Enable VPC <br>
+        <img width="881" height="899" alt="image" src="https://github.com/user-attachments/assets/73560235-843b-4814-b9c0-a57eecca07d5" />
+    - Now a private IP has been assigned to the VM. Keep a note of it:<br>
+       <img width="695" height="775" alt="image" src="https://github.com/user-attachments/assets/ce8d9b9d-e795-4bea-b685-854b2f71170b" />
+
+
+
+
+
+## Procedure
+
+### Login to the server using RDP(For windows VM) and SSH(for Ubuntu VM)
+
+- Using RDP:
+  1. Open RDP on the host machine by searching in thr start menu "RDP":
+     
+     <img width="787" height="675" alt="image" src="https://github.com/user-attachments/assets/7f16e995-07ba-4fed-88dc-ac8aeda4998c" />     
+  2. Enter the Server IP and click on "Show Options"
+  
+     <img width="416" height="271" alt="image" src="https://github.com/user-attachments/assets/77e08a17-9fed-4a37-8e57-70cad8161379" />
+  3. Enter the Username of the server and click "Connect":
+  
+     <img width="408" height="493" alt="image" src="https://github.com/user-attachments/assets/8dab2391-8d77-47a1-8855-6735e49e233f" />
+  4. Enter the password of the server:
+  
+     <img width="460" height="375" alt="image" src="https://github.com/user-attachments/assets/02daeca6-5126-42b5-94e4-19b73614ae38" />
+  5. "Yes" if prompted
+  
+     <img width="410" height="490" alt="image" src="https://github.com/user-attachments/assets/747bfe30-5629-4a72-a6a1-b3faf1f4fb67" />
+  6. And it should show the server Desktop:
+  
+     <img width="798" height="634" alt="image" src="https://github.com/user-attachments/assets/10341f91-96b4-40b2-aef3-b3d993b0601e" />
+
+- Using SSH:
+  1. Open Powershell on the host machine and enter the command replace the username and server_IP with your own, enter "yes" if prompted:
+
+          ssh <Username>@<SERVER_IP>
+     <img width="845" height="445" alt="image" src="https://github.com/user-attachments/assets/307155db-8e3e-4abc-98f8-7b1208b7d287" />
+  2. Enter the password and click "Enter", you should be able to see the home directory of the server:
+
+     <img width="856" height="726" alt="image" src="https://github.com/user-attachments/assets/ff51d1f0-9cea-41b6-a7dd-ccdfab6aa132" />
+
+### VPC Connection configuration
+1. Connect to the server using RDP (Windows) and open Powershell and run command. If the private IP of the VM is not the same assigned by the VPC, the connection between VM will not establish. In this case, its not same so I wil be manually configuring it:
+
+        ipconfig
+    <img width="1035" height="567" alt="image" src="https://github.com/user-attachments/assets/1a961691-effe-4559-9dc3-46c2dc71c400" />
+2. Open control pannel and go to "**Network nad Internet > Network and Sharing Center > Change Adapter Settings**"
+
+    <img width="1025" height="619" alt="image" src="https://github.com/user-attachments/assets/7b3345f6-af50-4d9c-aa84-95a414cc7627" />
+
+3. Select Ethernet Instance 0 2 as this is the one we need to edit according to the powershell results and open "Properties":
+
+   <img width="1068" height="652" alt="image" src="https://github.com/user-attachments/assets/902f7649-bf5c-44f9-8021-c9d9e4e78ab8" />
+
+4. Select TCP/IPv4 and select **"Use the following IP address"**. Enter the IP address form the VPC pannel:
+   
+   <img width="1621" height="690" alt="image" src="https://github.com/user-attachments/assets/b4f52d00-4b3a-4a8a-a36d-bd3559e496be" /><br>
+   <img width="403" height="453" alt="image" src="https://github.com/user-attachments/assets/1dc401ad-2744-4305-a75c-e46f35d8352c" />
+
+5. Click "OK" and close everything. On the powershell rerun the command and check if IP has been updated:
+   
+   <img width="1049" height="575" alt="image" src="https://github.com/user-attachments/assets/b7e0ed40-6d96-4613-8a1e-727b436e4af2" />
+   
+6. Do the above steps for the other Windows VM too.
+
+7. In ubuntu, connect using SSH and run the command. The IP address should be the same as VPC:
+
+           ip a
+   <img width="849" height="731" alt="image" src="https://github.com/user-attachments/assets/b58a13c4-33b3-4f6a-9e3c-0e4e0dc59aeb" />
+
+8. Use ping to check if all the VMs are in the same VPC and able to talk to each other:
+
+           ping <VPC_Private_IP_Address>
+   <img width="842" height="172" alt="image" src="https://github.com/user-attachments/assets/6c57ce61-5982-48de-babf-9ad26c1cf5e2" />
+
+### Active Directory setup
+- Connect to DEFYER-ADDC-01 sever via RDP and go to "Server Manager". We will be installing Active directory and promote this server to the     domain controller:
+  
+    <img width="1073" height="644" alt="image" src="https://github.com/user-attachments/assets/5f33a6a9-1800-4bab-bf5b-7f1f5eea158f" />
+- Go to **Manage > Add roles and Features**:
+
+    <img width="1065" height="641" alt="image" src="https://github.com/user-attachments/assets/1b31ff56-5ec2-4862-8d96-ae5718ff3377" />
+- Click **Next**
+  
+    <img width="789" height="570" alt="image" src="https://github.com/user-attachments/assets/9365c2e3-f913-4627-864e-80675d7112af" />
+
+- Click **Next**
+
+    <img width="784" height="569" alt="image" src="https://github.com/user-attachments/assets/d59e6209-61a2-40fb-98ad-48ed4ccfc180" />
+
+- Click **Next**
+
+    <img width="785" height="571" alt="image" src="https://github.com/user-attachments/assets/2e27ef93-48a7-49a1-b56d-1bc0dcda83e9" />
+
+- Select **Active Directory Domain Services**:
+
+    <img width="784" height="561" alt="image" src="https://github.com/user-attachments/assets/0b96e405-cc99-4030-a0b7-cdc2b9d0c2b0" />
+
+- Click **Add Features**:
+
+    <img width="417" height="432" alt="image" src="https://github.com/user-attachments/assets/91f53315-5daa-446c-b7a5-d738265bd3ab" />
+
+- Click **Next**:
+  
+    <img width="784" height="562" alt="image" src="https://github.com/user-attachments/assets/73b5dac9-5c59-4e46-8c2a-a5cb19931e05" />
+
+- Click **Next**:
+
+    <img width="783" height="556" alt="image" src="https://github.com/user-attachments/assets/94738fdb-1c40-499a-802a-10d1d748ebfc" />
+
+- Click **Next**:
+  
+    <img width="783" height="562" alt="image" src="https://github.com/user-attachments/assets/ce9d2d52-a702-4c6b-9820-2cd5044711e4" />
+
+- Click **Install**:
+
+    <img width="783" height="559" alt="image" src="https://github.com/user-attachments/assets/710db312-fc0f-4d73-815f-56d6f182a6dd" />
+
+- Click **Close** once the installation is complete:
+
+    <img width="788" height="562" alt="image" src="https://github.com/user-attachments/assets/710bb7db-afeb-4cac-8990-d1e2dcdc0df6" />
+
+- Click on the Flag icon on the Server manager:
+
+    <img width="1074" height="646" alt="image" src="https://github.com/user-attachments/assets/b414d4de-dcd4-46ca-9116-ad8fdaaaa0be" />
+
+- Promote the server to Domain Controller:
+
+    <img width="1070" height="645" alt="image" src="https://github.com/user-attachments/assets/55b5d6f9-d2df-4c43-aae3-9c35c6c971dc" />
+
+- Add a New Forest and enter a domain name then click **Next**:
+  
+    <img width="764" height="563" alt="image" src="https://github.com/user-attachments/assets/0156f235-2fcd-491d-8dab-242ac0303086" />
+
+- Enter a secure password and click **Next**:
+
+    <img width="758" height="562" alt="image" src="https://github.com/user-attachments/assets/9768b4fd-d89f-4f19-b38b-e9ef01fc262b" />
+
+- Click **Next**:
+
+    <img width="761" height="563" alt="image" src="https://github.com/user-attachments/assets/60dfbfc0-b1b2-4cf7-8ff9-ca65b50c8867" />
+
+- Click **next**:
+
+    <img width="757" height="563" alt="image" src="https://github.com/user-attachments/assets/eb52d0d2-3d7d-4f6c-a11b-8c944e27e5bf" />
+
+- Click **Next**:
+
+    <img width="760" height="564" alt="image" src="https://github.com/user-attachments/assets/8c03d3d9-eb63-4a82-9a56-9ed381bb3dd0" />
+
+- Click **Next**:
+
+    <img width="762" height="562" alt="image" src="https://github.com/user-attachments/assets/9f7c9671-b169-462a-b640-590594ad5b4e" />
+
+- Click **Install**:
+
+    <img width="764" height="562" alt="image" src="https://github.com/user-attachments/assets/1ac9ef3d-6985-492d-b886-8cb455f45fe5" />
+
+- Click **Close** if prompted and the session will terminate. Reconnect via RDP and wait for the configurations to finish. Once the server    is rebooted, search for Active Directory in the start menu and if you can see the Admin center, the installation was successful:
+
+    <img width="1040" height="858" alt="image" src="https://github.com/user-attachments/assets/d938d208-7245-4f29-83f0-ccc910ddb8dd" />
+
+- Lets create a few user accounts for the AD. Search for Users and open the AD users and Computers:
+
+    <img width="794" height="685" alt="image" src="https://github.com/user-attachments/assets/4c0546f5-1d2a-4dc5-9e9e-322ab8da8dc2" />
+
+- Under the active directory name, **Users > New > User** to create a new user;
+
+    <img width="1071" height="593" alt="image" src="https://github.com/user-attachments/assets/6fb88d75-044e-4aa9-8630-6c0c521305b1" />
+
+- Add user info and click **Next**:
+
+    <img width="439" height="378" alt="image" src="https://github.com/user-attachments/assets/8870aa4a-f9f6-48cd-b266-ec87719d42fa" />
+
+- Enter a Password and keep the first box unchecked as we are in a lab environment:
+
+    <img width="437" height="374" alt="image" src="https://github.com/user-attachments/assets/7a72d28c-8f4c-4bc4-9e9c-5e1bcdb7c234" />
+
+- Click **Finish**:
+
+    <img width="434" height="378" alt="image" src="https://github.com/user-attachments/assets/c90dc1ee-74a4-4fc6-a797-d9949baa9e83" />
+
+- Now connect to the target machine DEFYER-ADTM-01 via RDP and go to **About** in **Settings** and click on **Rename this PC**:
+
+    <img width="1197" height="616" alt="image" src="https://github.com/user-attachments/assets/25f3db76-7982-4e63-923e-4c02585a9fdb" />
+
+- Before adding this server to the domain, we need to add the Domain DNS to the IPv4 configuration or the server won't be able to 'see' the   domain. Add the Domain Controller's ,i.e, DEFYER-ADDC-01's internal IP address in the DNS:
+  
+    <img width="1263" height="698" alt="image" src="https://github.com/user-attachments/assets/21b7890f-4fb8-4640-9766-1c474b189ff4" />
+
+- Click **Change** if you don't see the Domain options.
+
+    <img width="405" height="471" alt="image" src="https://github.com/user-attachments/assets/e83b371e-cff8-4e22-a633-4bc8f78c03d5" />
+
+- Enter the domain name and clock **OK**:
+
+    <img width="409" height="464" alt="image" src="https://github.com/user-attachments/assets/c962822e-1146-4777-a423-4ef66e36c007" />
+
+- Enter the VULTR DEFYER-ADDC-01 (Domain Controller) credentials as it is the admin account:
+
+   <img width="458" height="300" alt="image" src="https://github.com/user-attachments/assets/618210a5-7d35-4781-b0eb-0941ccaad8aa" />
+
+- Successful connection looks like this:
+
+    <img width="1250" height="691" alt="image" src="https://github.com/user-attachments/assets/cf4ae955-1c58-48ab-9b7a-a24af59ee169" />
+
+- Click **OK** if prompts to restart:
+
+    <img width="1258" height="698" alt="image" src="https://github.com/user-attachments/assets/31434814-7c3f-48e5-a228-2dd6afdb9beb" />
+
+- Close all windows and restart when prompted:
+
+    <img width="1268" height="727" alt="image" src="https://github.com/user-attachments/assets/e4c8a3ff-85c0-4ea0-8ed6-e97e44604c2f" />
+
+- Now to Reconnect via RDP and to use the user account we created to login, we nned to enable RDP login for the account using the console     provided by VULTR. On the VULTR dashboard of the target machine, open the console:
+
+    <img width="1712" height="919" alt="image" src="https://github.com/user-attachments/assets/75192b9f-e3d3-4d01-87eb-80076e8f4102" />
+
+- Expand the controls and send the unlock command:
+
+    <img width="1016" height="756" alt="image" src="https://github.com/user-attachments/assets/67553090-e4c1-4b2e-8dd0-8663b309cd5b" /><br>
+    <img width="974" height="720" alt="image" src="https://github.com/user-attachments/assets/15944484-2967-46dd-b9e5-614e2867ceb6" /><br>
+    <img width="974" height="724" alt="image" src="https://github.com/user-attachments/assets/b29f5878-71be-47b3-9278-3254863b16cd" />
+
+- Select **Other user** and enter the credentials of the user we created in the AD:
+
+    <img width="1910" height="1042" alt="image" src="https://github.com/user-attachments/assets/328ef01d-cd86-4cef-9de7-47f7fd2a274b" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+   
+
