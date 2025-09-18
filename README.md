@@ -12,7 +12,7 @@ This lab aims to design and automate a Security Operations Center (SOC) lab that
 1. Login to the Virtual Machine via RDP/SSH
 2. VPC Configuration
 3. Active Directory Setup
-4. TheHive installation
+4. Splunk Enterprise Configuration
 5. Tools Configuration
 6. Malware Analysis (Mimikatz)
 7. Automation and enrichment
@@ -274,6 +274,202 @@ This lab aims to design and automate a Security Operations Center (SOC) lab that
 - Select **Other user** and enter the credentials of the user we created in the AD:
 
     <img width="1910" height="1042" alt="image" src="https://github.com/user-attachments/assets/328ef01d-cd86-4cef-9de7-47f7fd2a274b" />
+
+- In the start menu search for "Allow remote connections" and select it:
+
+    <img width="1625" height="1009" alt="image" src="https://github.com/user-attachments/assets/961eb35e-2c05-46cb-9531-fc700f0b2d94" />
+
+- Click **Show Settings**:
+
+    <img width="958" height="747" alt="image" src="https://github.com/user-attachments/assets/1e5b25bd-efe2-4246-9dda-a836c00bc89f" />
+
+- Enter VULTR ADDC-01 (Domain Controller) credentials:
+
+    <img width="366" height="381" alt="image" src="https://github.com/user-attachments/assets/92d0345c-f0a7-4345-a69a-c193287a95c8" />
+
+- Click **Select Users**
+
+    <img width="323" height="378" alt="image" src="https://github.com/user-attachments/assets/10a396e6-3215-421c-b6b6-5f027f31ecf8" />
+
+- Click **Add**
+
+    <img width="323" height="319" alt="image" src="https://github.com/user-attachments/assets/eb1ace62-7ee9-402c-8a7b-ca1463a037b7" />
+
+- Enter the Username of the USer created in the AD and click **Check Names** and then **OK** and close everything.
+
+    <img width="399" height="286" alt="image" src="https://github.com/user-attachments/assets/08891134-3630-4e7a-a4ff-039cdfc6a39a" />
+
+- Now open RDP on the local system and click **More options** then enter the IP address of the ADTM-01(target Machine) and check the box "Always Ask for credentials" to edit the username. To logine as user, the username will be YOUR_DOMAIN_NAME\USERNAME and enter the password for the user:
+
+    <img width="405" height="499" alt="image" src="https://github.com/user-attachments/assets/4fd42c54-e9c7-48eb-8504-0c78120e61c5" /><br>
+    <img width="460" height="371" alt="image" src="https://github.com/user-attachments/assets/e312a68c-e73a-4cdb-8cd7-af2cdb5fb296" />
+
+- Active Directory has been successfully configured with a user added to it.
+
+
+### Splunk Enterprise Configuration
+- Login to the ADSP-01(Splunk Server) via SSH:
+
+    <img width="847" height="646" alt="image" src="https://github.com/user-attachments/assets/478666fb-acaa-4505-b5f8-f4cd5a90b30c" />
+
+- Run update and upgrade command to make sure the Ubuntu packages are up to date
+
+        apt-get update && apt-get upgrade -y
+
+- On the local machine, navigate to splunk's website using this link [Splunk Signup](https://www.splunk.com/en_us/form/sign-up.html?redirecturl=https://www.splunk.com/).
+
+    <img width="1637" height="901" alt="image" src="https://github.com/user-attachments/assets/499ed969-92b0-433c-bb8f-90dc30ce9a50" />
+
+- Create a splunk enterprise account and login, then Click on **"Trials and Downloads"** on the top right corner. Then click on **"Get my free Trial"** button below the **"Splunk Enterprise"** section.
+
+    <img width="1561" height="925" alt="image" src="https://github.com/user-attachments/assets/60fe043f-d1e9-4d31-8d5b-a77299f9285b" />
+
+- It will take you to a downloads page with several splunk versions. Click on **"Previous Releases"** to see all the options. Make sure you select the **"Linux"** tab and click **"Copy wget link"** of the **".deb"** file.
+
+    <img width="1899" height="776" alt="image" src="https://github.com/user-attachments/assets/53f366c4-b5b6-4cb8-8a8d-ad65ea557147" />
+
+- Paste the command in the SSH session Powershell and click "Enter":
+
+    <img width="956" height="270" alt="image" src="https://github.com/user-attachments/assets/9573aa19-eadc-403d-b96c-b4f780a1f6aa" />
+
+- Check if the file is downloaded:
+
+        ls
+    <img width="956" height="107" alt="image" src="https://github.com/user-attachments/assets/53659cc7-f811-4154-b6b1-5ee90e284d53" />
+
+- Install the file using **dpkg**
+
+          dpkg -i splunk-10.0.0-e8eb0c4654f8-linux-amd64.deb
+    <img width="955" height="85" alt="image" src="https://github.com/user-attachments/assets/9a5cd657-255e-40bb-8626-0b60906e6052" />
+
+- After the installation is complete, head over to sthe Splunk directory and check the contents:
+
+        cd /opt/splunk
+        ls
+    <img width="955" height="146" alt="image" src="https://github.com/user-attachments/assets/a9178ec5-de90-4dc1-8f83-002d4bfec833" />
+
+- To start the splunk setup, head in the bin directory and run the Splunk binary:
+
+        cd bin
+    <img width="959" height="432" alt="image" src="https://github.com/user-attachments/assets/bd2d4d6a-f682-487a-b33d-b3941db8d2e1" />
+
+        ./splunk start
+    <img width="937" height="739" alt="image" src="https://github.com/user-attachments/assets/9f4a5c18-3f88-4925-90f5-80cc3f2e11bc" />
+
+- Keep holding the Space bar till you reach at the end of licensing terms and entry "y" to agree
+
+    <img width="850" height="97" alt="image" src="https://github.com/user-attachments/assets/b2868ae3-6d15-4584-897b-ed67c41f4ccb" />
+
+- Enter a username and password to login into the splunk instance. These credentials have nothing to do with the Splunk.com credentials and can be different.
+
+    <img width="880" height="180" alt="image" src="https://github.com/user-attachments/assets/75f7208b-674a-43a8-9dfa-3cc0fad61f7b" />
+
+- A URL to access the Splunk web console is generated and can be accessed from the web browser of the local machine. However instead of the servername, use the public IP of the ADSP-01 server and port 8000.
+
+    <img width="959" height="113" alt="image" src="https://github.com/user-attachments/assets/1b55c592-12d6-43cf-a259-5294e72822a4" />
+
+- Before trying to connect, edit the VULTR firewall rule for ADSP-01 to allow TCP connection on port 8000 for the local machine:
+
+    <img width="1807" height="605" alt="image" src="https://github.com/user-attachments/assets/9b946745-7ee9-4739-839c-1e0544587833" />
+
+- Also check if internal UFW firewall is enabled on the Ububtu OS. If it is, either allow the port or disable the filrewall:
+
+        ufw status
+    <img width="957" height="134" alt="image" src="https://github.com/user-attachments/assets/f278e5be-e680-4db6-80e7-27898211e830" />
+
+        ufw allow 8000
+    <img width="957" height="199" alt="image" src="https://github.com/user-attachments/assets/d187055a-127d-4ceb-a2ea-4de6af84dd38" />
+
+- Now the Web console should be accessible. Enter the credentials that were created with splunk installation:
+
+    <img width="1901" height="920" alt="image" src="https://github.com/user-attachments/assets/db6c697a-51c3-44be-a931-8de15e50b987" />
+
+- On the dashboard Click on **Administrator > Preferences**:
+
+    <img width="1898" height="986" alt="image" src="https://github.com/user-attachments/assets/0f7f55b2-8442-41fe-8d95-ffcb0a2b8cfd" />
+
+- Select "GMT timezone" and click "Apply":
+
+    <img width="1881" height="938" alt="image" src="https://github.com/user-attachments/assets/0d3ce7a4-017a-4947-bb76-ef579ccf561f" /><br>
+    <img width="882" height="691" alt="image" src="https://github.com/user-attachments/assets/183901ab-28e2-4925-9f42-4ee0ecf7ff17" />
+
+- To add an add-on, click **Apps > Find more apps**:
+
+     <img width="1898" height="709" alt="image" src="https://github.com/user-attachments/assets/b543bad7-a9fe-44c5-ba84-c2a2a5a9b8d8" />
+
+- Search for windows add on and install it:
+
+    <img width="1891" height="874" alt="image" src="https://github.com/user-attachments/assets/6aedd875-2fc4-4b27-bdd0-563a205d18e9" />
+
+- Enter your Splunk.com username and password:
+
+    <img width="864" height="772" alt="image" src="https://github.com/user-attachments/assets/2bbdd494-f470-4982-b4fa-bf6417763063" />
+
+- After installation is complete go to **"Settings > Indexes"**:
+
+    <img width="1878" height="811" alt="image" src="https://github.com/user-attachments/assets/82663cea-f3bf-425d-992e-ba563ffbde69" />
+
+- Click on **New Index**:
+
+    <img width="1891" height="819" alt="image" src="https://github.com/user-attachments/assets/cdfa8c98-1332-48ef-b634-530e3138f4ea" />
+
+- This is where all the logs releated to AD will be stored. Name the index and click "Save":
+
+    <img width="1001" height="790" alt="image" src="https://github.com/user-attachments/assets/18ee108a-e9a2-4b81-a844-e080a24cfb66" />
+
+- Navigate to **Settings > Forwarding and Receiving**:
+
+    <img width="1874" height="861" alt="image" src="https://github.com/user-attachments/assets/e70381ee-fedc-44a0-907e-923ded53e85b" />
+
+- Click **Configure Receiving** and enter the port 9997 as this is where the logs will be forwarded to:
+
+    <img width="1876" height="733" alt="image" src="https://github.com/user-attachments/assets/af82f422-e6f4-4da5-8944-842d3f44d760" /><br>
+    <img width="1907" height="518" alt="image" src="https://github.com/user-attachments/assets/1cb796e0-0936-43c0-bb31-a188882105cf" /><br>
+    <img width="1807" height="547" alt="image" src="https://github.com/user-attachments/assets/f3459cd3-dc8e-4e0a-a347-99a304695739" />
+
+
+### Splunk universal forwarder configuration
+- Go to Splunk.com and login. under the "trials and downloads", select the Splunk **"Universal Forwarder"**:
+
+    <img width="1840" height="781" alt="image" src="https://github.com/user-attachments/assets/9b8a8028-98d7-43d1-b9e1-4e4dae4cbfcd" /><br>
+
+- We are using Windows server 2022 so select that file and download it. Agree to the licensing terms:
+
+    <img width="1879" height="805" alt="image" src="https://github.com/user-attachments/assets/86981d43-8d8b-4bc8-82d7-07ba5775e181" />
+
+- Login to the Target machine (ADTM-01) using Administrator Credentials and copy the Universal Forwarder file over there using copy-paste:
+
+    <img width="405" height="486" alt="image" src="https://github.com/user-attachments/assets/89796c7e-3a4a-457a-a1a5-fbb0e1bae272" /><br>
+    <img width="1883" height="1009" alt="image" src="https://github.com/user-attachments/assets/e8efce5f-79f8-4230-a6cf-7fe1ea93c4ef" /><br>
+    <img width="1238" height="918" alt="image" src="https://github.com/user-attachments/assets/61dcf8cf-65da-45b0-83f3-e914b103a000" />
+
+- Now run the installer:
+
+    <img width="502" height="389" alt="image" src="https://github.com/user-attachments/assets/a7ea76ab-6d33-4d44-98df-f56e1e5dc503" />
+    
+- Enter a username:
+
+    <img width="494" height="393" alt="image" src="https://github.com/user-attachments/assets/85e4048c-ce63-4bae-9df5-f7f20d368fb5" /><br>
+    <img width="494" height="391" alt="image" src="https://github.com/user-attachments/assets/9377ccdc-91da-49e0-a5c5-0e14e1050111" />
+
+- Enter the internal IP of the ADSP-01 server:
+
+    <img width="495" height="391" alt="image" src="https://github.com/user-attachments/assets/77026d7d-afa5-4b32-ac6a-5319b47eeabc" /><br>
+    <img width="495" height="397" alt="image" src="https://github.com/user-attachments/assets/abf0ad80-a38e-4fde-b8e6-31b309582541" /><br>
+    <img width="497" height="393" alt="image" src="https://github.com/user-attachments/assets/141a1d6e-1595-4dce-a38c-e3533aaa6b2d" />
+
+- 
+
+
+    
+
+
+
+
+
+
+
+
 
 
 
