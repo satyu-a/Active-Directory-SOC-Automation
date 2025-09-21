@@ -458,7 +458,26 @@ This lab aims to design and automate a Security Operations Center (SOC) lab that
     <img width="495" height="397" alt="image" src="https://github.com/user-attachments/assets/abf0ad80-a38e-4fde-b8e6-31b309582541" /><br>
     <img width="497" height="393" alt="image" src="https://github.com/user-attachments/assets/141a1d6e-1595-4dce-a38c-e3533aaa6b2d" />
 
+- Repeat the above steps for the ADDC-01 server.
+
+- Open powershell and connect to ADSP-01 server via SSH and add a firewall rule to allow traffic on port 9997:
+
+        ufw allow 9997
+    <img width="848" height="196" alt="image" src="https://github.com/user-attachments/assets/ae4f23ff-520b-4f3c-9659-d5a8cda0f61e" />
+    
+- Once Splunk Forwarder is setup on both machines, head over to the splunk Web Console and navigate to **Apps > Searching and Reporting**. Enter the query in the search field **"index=Your_index_name"**:
+
+    <img width="1885" height="942" alt="image" src="https://github.com/user-attachments/assets/fa170ac2-ef97-4b78-9e39-fa4131a12dc3" /><br>
+    <img width="1913" height="844" alt="image" src="https://github.com/user-attachments/assets/83b87edc-c3c3-4852-92c2-d65ae68251d5" />
+
+- Once the logs are fetched, click on **host** and if the Splunk Forwaarder was successfully installed, both servers should be visible there:
+
+    <img width="1892" height="934" alt="image" src="https://github.com/user-attachments/assets/17a08257-df74-4f28-95d9-2e29c993fc87" />
+
 - 
+
+    
+
 
 
     
