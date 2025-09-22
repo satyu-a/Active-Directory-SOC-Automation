@@ -13,7 +13,7 @@ This lab aims to design and automate a Security Operations Center (SOC) lab that
 2. VPC Configuration
 3. Active Directory Setup
 4. Splunk Enterprise Configuration
-5. Tools Configuration
+5. Building Alerts
 6. Malware Analysis (Mimikatz)
 7. Automation and enrichment
 
@@ -474,7 +474,9 @@ This lab aims to design and automate a Security Operations Center (SOC) lab that
 
     <img width="1892" height="934" alt="image" src="https://github.com/user-attachments/assets/17a08257-df74-4f28-95d9-2e29c993fc87" />
 
-- 
+### Building Alerts
+
+- I will be using bruteforce attack techinque and will create an alert accordingly. 
 
     
 
