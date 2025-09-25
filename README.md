@@ -14,7 +14,7 @@ This lab aims to design and automate a Security Operations Center (SOC) lab that
 3. Active Directory Setup
 4. Splunk Enterprise Configuration
 5. Building Alerts
-6. Malware Analysis (Mimikatz)
+6. Lab automation using Shuffle
 7. Automation and enrichment
 
 ## Logical Diagram of the Setup
@@ -502,11 +502,116 @@ This lab aims to design and automate a Security Operations Center (SOC) lab that
    <img width="807" height="856" alt="image" src="https://github.com/user-attachments/assets/f3ad43f4-05de-40bb-a7c0-dff2c3a54690" />
 
 
-- To generate some alerts, connect to the server via RDP but enter wrong password for 20 times
+- To generate some alerts, connect to the server via RDP but enter wrong password 20 times
 - Then head to Activity > Triggered Alerts to see if  it has been triggered:
 
     <img width="1895" height="324" alt="image" src="https://github.com/user-attachments/assets/3ca94094-e549-4960-bd78-7cef81fdbf42" /><br>
     <img width="1911" height="328" alt="image" src="https://github.com/user-attachments/assets/391cfd9e-828a-42f3-81d5-064b34020fee" />
+
+### Lab automation using Shuffle
+- Go to [Shuffle's Website](https://shuffler.io/login) and create an account:
+
+    <img width="1891" height="835" alt="image" src="https://github.com/user-attachments/assets/955e5146-3bcd-427d-98c2-4ebdc9312ca4" />
+
+- Click **Create Workflow**
+
+    <img width="1908" height="731" alt="image" src="https://github.com/user-attachments/assets/04ee5ef9-6513-4e35-aa68-ebe1b47af65c" />
+
+- Enter a name and create the workflow:
+
+    <img width="708" height="942" alt="image" src="https://github.com/user-attachments/assets/8c3e11ff-ae52-44be-ac5b-a30deef11899" />
+
+- Drag and drop the webhook in the Workflow:
+
+    <img width="1819" height="816" alt="image" src="https://github.com/user-attachments/assets/49c40a21-6fab-4afc-a10a-dad3f4635c8d" /><br>
+    <img width="1396" height="798" alt="image" src="https://github.com/user-attachments/assets/9a3945e6-4ea7-46eb-a1c9-6caab1d601c0" />
+    
+- This webhook will be the splunk alert that has been triggered. Click on the webhook, rename it and copy the URL:
+
+    <img width="1515" height="826" alt="image" src="https://github.com/user-attachments/assets/d4d07310-a38d-4229-88e0-3e41862ce10f" />
+
+- Go to Search and Reportingg on plunk Web and click on **Alerts**:
+
+    <img width="1913" height="530" alt="image" src="https://github.com/user-attachments/assets/d81782a5-2f64-41c5-8b25-f61ce1414a9d" />
+
+- Click **Edit Alert** and disable throttle for now. We nned to generate alerts to test integrations: 
+
+    <img width="1909" height="622" alt="image" src="https://github.com/user-attachments/assets/fc842c93-f7b8-4e09-b499-41e0f12f4345" /><br>
+    <img width="811" height="877" alt="image" src="https://github.com/user-attachments/assets/ddd077d7-8b3d-45e9-8019-942d5e52c58c" />
+
+- Go to **Trigger Actions**:
+
+    <img width="801" height="584" alt="image" src="https://github.com/user-attachments/assets/a747b5dd-00b5-4be2-89f3-69b61a0bc59b" />
+
+- Click **Add Actions**, Scroll down and select "Webhook":
+
+    <img width="826" height="660" alt="image" src="https://github.com/user-attachments/assets/92c401cf-d08a-40d2-b1bd-548edc1327b1" />
+
+- Paste the webhook URL copied from shuffle and save the alert:
+
+    <img width="795" height="668" alt="image" src="https://github.com/user-attachments/assets/07203eec-37a2-4dc0-ad25-95d8550a5c6c" />
+
+- On the shuffle woorkflow, select the webhook and start it:
+
+    <img width="1520" height="837" alt="image" src="https://github.com/user-attachments/assets/e5a825d1-2b35-45a9-bf54-d9a41419cbe2" />
+
+- Click on **Workflow runs** and the alert should be there, if not, refresh the workflow. As the alerts are triggered in our Splunk, they will show up here:
+
+    <img width="1534" height="938" alt="image" src="https://github.com/user-attachments/assets/55717e83-f708-494e-986a-23ab2bb31da1" /><br>
+    <img width="1530" height="942" alt="image" src="https://github.com/user-attachments/assets/74a1a3d3-91af-4712-8a5b-2d5df8d5295e" /><br>
+    <img width="1534" height="926" alt="image" src="https://github.com/user-attachments/assets/92033500-7124-485a-91b1-164d2251f0f5" />
+
+- Now stop the webhook and disable the Alert till we finish the workflow:
+
+    <img width="1542" height="950" alt="image" src="https://github.com/user-attachments/assets/00ee0bb0-7e43-4a0e-950e-14a02e2562f4" /><br>
+    <img width="1911" height="636" alt="image" src="https://github.com/user-attachments/assets/f7d03608-03e2-4600-b910-c3187d560013" />
+
+- Go to [Slack's Website](https://slack.com/intl/en-in/get-started?entry_point=home_page#/createnew) and signup. Write the project name:
+
+    <img width="1918" height="795" alt="image" src="https://github.com/user-attachments/assets/049cd612-0fbf-4c41-9d37-4638836aa3e9" />
+
+- Give your name nad skip collegues. Start with limited access:
+
+    <img width="1372" height="869" alt="image" src="https://github.com/user-attachments/assets/c82af3ec-998e-46b8-9d37-669db7b74742" />
+
+- Go to shuffle and search for slack. If available. drag and drop to the workflow:
+
+    <img width="1291" height="809" alt="image" src="https://github.com/user-attachments/assets/b858d088-d198-4960-a3f0-fb1deeaf595f" />
+
+- This will be the alert notification. name it as such:
+
+    <img width="1535" height="814" alt="image" src="https://github.com/user-attachments/assets/f0757984-4a1f-4b22-a34b-b817d88dd054" />
+
+- Start the authentication:
+
+    <img width="1535" height="814" alt="image" src="https://github.com/user-attachments/assets/2f935146-9dd9-4f09-bde7-2178dba2c98d" />
+
+- Click on one click logine:
+
+    <img width="1210" height="759" alt="image" src="https://github.com/user-attachments/assets/219908d2-997d-4f2c-b835-45b6750e8c01" />
+
+- Go to Slack and creat a new channel:
+
+    <img width="1754" height="754" alt="image" src="https://github.com/user-attachments/assets/d5fff32a-e2f0-463b-9737-b30383293d4a" /><br>
+    <img width="1074" height="698" alt="image" src="https://github.com/user-attachments/assets/c96cda0f-28e8-4937-99d5-e53761ca0f3c" /><br>
+    <img width="1064" height="702" alt="image" src="https://github.com/user-attachments/assets/ad8dc915-bf17-4100-a29e-f17d770c8a35" />
+
+- 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
