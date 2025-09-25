@@ -476,9 +476,37 @@ This lab aims to design and automate a Security Operations Center (SOC) lab that
 
 ### Building Alerts
 
-- I will be using bruteforce attack techinque and will create an alert accordingly. 
+- I will be using bruteforce attack techinque and will create an alert accordingly.
+- A bruteforce attack query conditions state that if number of login failures exceed 20 attempts in 5 minutes, trigger the alert:
 
-    
+        index=YOUR_INDEX_NAME (action=failure OR "Failed password" OR EventCode=4625)
+        | bin _time span=5m
+        | stats count as failures by user src_ip _time
+        | where failures >= 20
+        | sort - failures
+
+- Enter this query in the search box and click on **"Save AS > Alert"**:
+
+    <img width="1905" height="368" alt="image" src="https://github.com/user-attachments/assets/c366a5ac-0912-46f1-a01a-e4ed961bfcd8" />
+
+- Enter the following alert details:
+  1. Alert name: Bruteforce-attack-detected
+  2. Alert type: Cron Schedule
+  3. Time range 60 minutes
+  4. Cron expression ***** (Every minute)
+  5. Throttle: Checked (So the alert won't trigger spam after triggering once for 10 minutes)
+  6. Trigger Actions > Add Actions: Save to alert with severity as high
+  7. Save
+     
+   <img width="798" height="852" alt="image" src="https://github.com/user-attachments/assets/30003330-f2d4-4ed8-803d-eea5d3cc8e1e" /><br>
+   <img width="807" height="856" alt="image" src="https://github.com/user-attachments/assets/f3ad43f4-05de-40bb-a7c0-dff2c3a54690" />
+
+
+- To generate some alerts, connect to the server via RDP but enter wrong password for 20 times
+- Then head to Activity > Triggered Alerts to see if  it has been triggered:
+
+    <img width="1895" height="324" alt="image" src="https://github.com/user-attachments/assets/3ca94094-e549-4960-bd78-7cef81fdbf42" /><br>
+    <img width="1911" height="328" alt="image" src="https://github.com/user-attachments/assets/391cfd9e-828a-42f3-81d5-064b34020fee" />
 
 
 
